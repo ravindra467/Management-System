@@ -1,13 +1,11 @@
 from django.db import models
-from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
-)
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None):
         if not email:
-            raise ValueError('Users must have an email address')
+            raise ValueError("Users must have an email address")
 
         user = self.model(
             email=self.normalize_email(email),
@@ -27,9 +25,10 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class User(AbstractBaseUser):
     email = models.EmailField(
-        verbose_name='email address',
+        verbose_name="email address",
         max_length=255,
         unique=True,
     )
@@ -38,7 +37,7 @@ class User(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
 
     objects = CustomUserManager()
 
@@ -53,31 +52,31 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
-        return True        
+        return True
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        primary_key=True, 
+        primary_key=True,
     )
     first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    preferred_name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='profile-images')
-    discord_name = models.CharField(max_length=100)
+    bio = models.TextField(default="", null=True)
+    preferred_name = models.CharField(max_length=100, null=True)
+    avatar_url = models.CharField(max_length=255, null=True)
+    discord_name = models.CharField(max_length=100, null=True)
     github_username = models.CharField(max_length=100)
-    codepen_name = models.CharField(max_length=100)
-    fcc_profile_url = models.CharField(max_length=255)
+    codepen_username = models.CharField(max_length=100, null=True)
+    fcc_profile_url = models.CharField(max_length=255, null=True)
 
     LEVELS = {
-        (1,'Level One'),
-        (2,'Level Two'),
+        (1, "Level One"),
+        (2, "Level Two"),
     }
-    current_level= models.IntegerField(choices=LEVELS)
-    phone = models.CharField(max_length = 50)
-    timezone = models.CharField(max_length = 50)
+    current_level = models.IntegerField(choices=LEVELS, default=1)
+    phone = models.CharField(max_length=50, null=True)
+    timezone = models.CharField(max_length=50, null=True)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'        
+        return f"{self.first_name}"

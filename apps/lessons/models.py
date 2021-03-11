@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.utils.models import Timestamps
+from apps.utils.models import AbstractTableMeta
 
 
-class lessons(Timestamps, models.Model):
+class lessons(AbstractTableMeta, models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=100)
     lecturer_name = models.CharField(max_length=100, default="", blank=True)
